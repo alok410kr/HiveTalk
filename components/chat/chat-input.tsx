@@ -70,31 +70,38 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <div className="relative p-4 pb-6">
-                  <button
-                    type="button"
-                    aria-label="Attach file"
-                    onClick={() =>
-                      onOpen("messageFile", { apiUrl, query })
-                    }
-                    className="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center"
-                  >
-                    <Plus className="text-white dark:text-[#313338]" />
-                  </button>
-                  <Input
-                    placeholder={`Message ${type === "conversation" ? name : "#" + name}`}
-                    disabled={isLoading}
-                    className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                    {...field} 
-                  />
-                  <div className="absolute top-7 right-8">
+                <div className="relative px-4 py-3 bg-white dark:bg-[#1e2124] border-t border-zinc-100 dark:border-zinc-800">
+                  <div className="flex items-center gap-2 bg-zinc-50 dark:bg-[#2a2d32] rounded-lg px-3 py-2">
+                    <button
+                      type="button"
+                      aria-label="Attach file"
+                      onClick={() =>
+                        onOpen("messageFile", { apiUrl, query })
+                      }
+                      className="h-8 w-8 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center"
+                    >
+                      <Plus className="h-5 w-5" />
+                    </button>
+                    <Input
+                      placeholder={`Message ${type === "conversation" ? name : "#" + name}...`}
+                      disabled={isLoading}
+                      className="flex-1 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 text-sm py-2"
+                      {...field}
+                    />
                     <EmojiPicker
                       onChange={(emoji: string) =>
                         field.onChange(`${field.value} ${emoji}`)
                       }
                     />
+                    <button
+                      type="submit"
+                      disabled={isLoading || !field.value}
+                      className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-md flex items-center justify-center text-white text-sm font-medium"
+                    >
+                      Send
+                    </button>
                   </div>
-                </div> 
+                </div>
               </FormControl>
             </FormItem>
           )}
