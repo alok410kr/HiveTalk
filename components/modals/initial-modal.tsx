@@ -79,12 +79,12 @@ export const InitialModal = () => {
 
   return (
     <Dialog open>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-[#1e2124] text-zinc-100 p-0 overflow-hidden border-zinc-700">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
             Cutomize your server
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc">
+          <DialogDescription className="text-center text-zinc-400">
             Give your server a personality with a name and an image. You can
             always change these later.
           </DialogDescription>
@@ -114,13 +114,13 @@ export const InitialModal = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:e=text-secondary/70">
+                    <FormLabel className="uppercase text-xs font-bold text-zinc-400">
                       Server Name
                     </FormLabel>
                     <FormControl>
                     <Input
                        disabled={isLoading}
-                      className="bg-zinc-300/50 border-0 foucs-vissible:ring-0 text-black focus-visible:ring-offset-0"
+                      className="bg-zinc-800 border-0 focus-visible:ring-0 text-zinc-100 focus-visible:ring-offset-0 placeholder:text-zinc-400"
                       placeholder="Enter your server name"
                       {...field}
                     />
@@ -130,7 +130,7 @@ export const InitialModal = () => {
                 )}
               />
             </div>
-            <DialogFooter className="bg-gray-100 px-6 py-4">
+            <DialogFooter className="bg-[#15171a] px-6 py-4">
                       <Button variant="primary" disabled={isLoading}>
                         Create
                       </Button>
