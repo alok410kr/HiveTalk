@@ -33,19 +33,19 @@ export const ServerMember = ({ member, server }: ServerMemberProps) => {
     <button
      onClick={onclick}
       className={cn(
-        "group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1",
-        params?.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700"
+        "group px-3 py-2 rounded-md flex items-center gap-x-3 w-full hover:bg-zinc-800/50 transition-colors mb-0.5",
+        params?.memberId === member.id && "bg-zinc-800"
       )}
     >
       <UserAvatar
         src={member.profile.imageUrl}
-        className="h-8 w-8 md:h-8 md:w-8"
+        className="h-7 w-7 md:h-7 md:w-7"
       />
       <p
         className={cn(
-          "font-semibold text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition",
+          "font-medium text-sm text-zinc-400 group-hover:text-zinc-200 transition",
           params?.memberId === member.id &&
-            "text-primary dark:text-zinc-200 dark:group-hover:text-white"
+            "text-zinc-100"
         )}
       >
         {member.profile.name}
