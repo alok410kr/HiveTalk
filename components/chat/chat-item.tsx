@@ -45,7 +45,7 @@ interface ChatItemProps {
 
 const roleIconMap = {
   GUEST: null,
-  MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
+  MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-emerald-600" />,
   ADMIN: <ShieldAlert className="h-4 w-4 ml-2 text-rose-500" />
 };
 
@@ -70,6 +70,8 @@ export function ChatItem({
 
   const params = useParams();
   const router = useRouter();
+
+  const isOwner = currentMember.id === member.id;
 
   const onMemberClick = () => {
     if (member.id === currentMember.id) return;
@@ -122,44 +124,73 @@ export function ChatItem({
 
   const isAdmin = currentMember.role === MemberRole.ADMIN;
   const isModerator = currentMember.role === MemberRole.MODERATOR;
-  const isOwner = currentMember.id === member.id;
   const canDeleteMessage = !deleted && (isAdmin || isModerator || isOwner);
   const canEditMessage = !deleted && isOwner && !fileUrl;
   const isPDF = fileType === "pdf" && fileUrl;
   const isImage = !isPDF && fileUrl;
 
   return (
-    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
-      <div className="group flex gap-x-2 items-center w-full">
+    <div
+      className={cn(
+        "relative group flex items-end gap-2 py-2 px-4 transition w-full",
+        isOwner ? "flex-row-reverse" : "flex-row"
+      )}
+    >
+      {/* Avatar - only show for others' messages */}
+      {!isOwner && (
         <div
           onClick={onMemberClick}
-          className="cursor-pointer hover:drop-shadow-md transition"
+          className="cursor-pointer hover:opacity-80 transition flex-shrink-0"
         >
-          <UserAvatar src={member.profile.imageUrl} />
+          <UserAvatar src={member.profile.imageUrl} className="h-8 w-8" />
         </div>
-        <div className="flex flex-col w-full">
-          <div className="flex items-center gap-x-2">
-            <div className="flex items-center">
-              <p
-                onClick={onMemberClick}
-                className="font-semibold text-sm hover:underline cursor-pointer"
-              >
-                {member.profile.name}
-              </p>
-              <ActionTooltip label={member.role}>
-                {roleIconMap[member.role]}
-              </ActionTooltip>
-            </div>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              {timestamp}
-            </span>
-          </div>
+      )}
+
+      {/* Message bubble */}
+      <div
+        className={cn(
+          "flex flex-col max-w-[70%] min-w-[100px]",
+          isOwner ? "items-end" : "items-start"
+        )}
+      >
+        {/* Name and timestamp - only show name for others */}
+        <div
+          className={cn(
+            "flex items-center gap-2 mb-1",
+            isOwner ? "flex-row-reverse" : "flex-row"
+          )}
+        >
+          {!isOwner && (
+            <p
+              onClick={onMemberClick}
+              className="text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:underline cursor-pointer"
+            >
+              {member.profile.name}
+            </p>
+          )}
+          {!isOwner && (
+            <ActionTooltip label={member.role}>
+              {roleIconMap[member.role]}
+            </ActionTooltip>
+          )}
+        </div>
+
+        {/* Message content bubble */}
+        <div
+          className={cn(
+            "relative rounded-2xl px-4 py-2.5",
+            isOwner
+              ? "bg-emerald-600 text-white rounded-br-sm"
+              : "bg-white dark:bg-[#2a2d32] text-zinc-800 dark:text-zinc-100 rounded-bl-sm",
+            deleted && "opacity-60"
+          )}
+        >
           {isImage && (
             <a
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48"
+              className="relative aspect-square rounded-xl overflow-hidden flex items-center bg-secondary h-48 w-48"
             >
               <Image
                 src={fileUrl}
@@ -170,13 +201,16 @@ export function ChatItem({
             </a>
           )}
           {isPDF && (
-            <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
-              <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+            <div className="relative flex items-center p-2 rounded-lg bg-white/10 dark:bg-black/10">
+              <FileIcon className="h-8 w-8 fill-indigo-200 stroke-indigo-400" />
               <a
                 href={fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline"
+                className={cn(
+                  "ml-2 text-sm hover:underline",
+                  isOwner ? "text-white/90" : "text-indigo-500 dark:text-indigo-400"
+                )}
               >
                 PDF File
               </a>
@@ -185,14 +219,18 @@ export function ChatItem({
           {!fileUrl && !isEditing && (
             <p
               className={cn(
-                "text-sm text-zinc-600 dark:text-zinc-300",
-                deleted &&
-                  "italic to-zinc-500 dark:text-zinc-400 text-xs mt-1"
+                "text-sm leading-relaxed",
+                deleted && "italic text-xs"
               )}
             >
               {content}
               {isUpdated && !deleted && (
-                <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
+                <span
+                  className={cn(
+                    "text-[10px] mx-2",
+                    isOwner ? "text-white/60" : "text-zinc-400"
+                  )}
+                >
                   (edited)
                 </span>
               )}
@@ -201,7 +239,7 @@ export function ChatItem({
           {!fileUrl && isEditing && (
             <Form {...form}>
               <form
-                className="flex items-center w-full gap-x-2 pt-2"
+                className="flex items-center w-full gap-x-2"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FormField
@@ -210,36 +248,51 @@ export function ChatItem({
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormControl>
-                        <div className="relative w-full">
-                          <Input
-                            disabled={isLoading}
-                            placeholder="Edited message"
-                            className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                            {...field}
-                          />
-                        </div>
+                        <Input
+                          disabled={isLoading}
+                          placeholder="Edit message..."
+                          className="p-2 bg-white dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 rounded-lg focus-visible:ring-1 focus-visible:ring-indigo-500 text-zinc-800 dark:text-zinc-200"
+                          {...field}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
                 />
-                <Button disabled={isLoading} size="sm" variant="primary">
+                <Button disabled={isLoading} size="sm" className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg">
                   Save
                 </Button>
               </form>
               <span className="text-[10px] mt-1 text-zinc-400">
-                Press escape to cancel, enter to save
+                Esc to cancel, Enter to save
               </span>
             </Form>
           )}
         </div>
+
+        {/* Timestamp */}
+        <span
+          className={cn(
+            "text-[10px] text-zinc-400 mt-1 px-1",
+            isOwner ? "text-right" : "text-left"
+          )}
+        >
+          {timestamp}
+        </span>
       </div>
+
+      {/* Action buttons on hover */}
       {canDeleteMessage && (
-        <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
+        <div
+          className={cn(
+            "hidden group-hover:flex items-center gap-1 px-2 py-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full shadow-lg",
+            isOwner ? "order-first" : ""
+          )}
+        >
           {canEditMessage && (
             <ActionTooltip label="Edit">
               <Edit
                 onClick={() => setIsEditing(true)}
-                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+                className="cursor-pointer w-4 h-4 text-zinc-500 hover:text-indigo-500 transition"
               />
             </ActionTooltip>
           )}
@@ -251,7 +304,7 @@ export function ChatItem({
                   query: socketQuery
                 })
               }
-              className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+              className="cursor-pointer w-4 h-4 text-zinc-500 hover:text-rose-500 transition"
             />
           </ActionTooltip>
         </div>
