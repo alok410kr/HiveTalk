@@ -45,14 +45,14 @@ export const ServerSearch=({data}:ServerSearchProps)=>{
 
     return(
         <>
-            <button onClick={()=>{setOpen(true)}} className="group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
+            <button onClick={()=>{setOpen(true)}} className="group px-3 py-2 mx-2 my-2 rounded-md flex items-center gap-x-2 w-[calc(100%-16px)] bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors">
                 
-                <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                <p className="font-semibold text-sm text-zinc-500 dark:text-iznc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition ">
+                <Search className="w-4 h-4 text-zinc-500" />
+                <p className="font-medium text-sm text-zinc-400">
                     Search
                 </p>
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground ml-auto ">
-                    <span className="text-xs">CTRL</span>K
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-0.5 rounded bg-zinc-700 border border-zinc-600 px-1.5 font-mono text-[10px] font-medium text-zinc-500 ml-auto">
+                    <span className="text-xs">⌘</span>K
                 </kbd>
             </button>
             <CommandDialog open={open} onOpenChange={setOpen} >
