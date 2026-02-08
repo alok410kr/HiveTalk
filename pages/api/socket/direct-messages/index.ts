@@ -3,6 +3,7 @@ import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/types";
 import { currentProfilePages } from "@/lib/current-profile-pages";
 import { db } from "@/lib/db";
+import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,6 +18,22 @@ export default async function handler(
     const { conversationId } = req.query;
 
     if (!profile) return res.status(401).json({ error: "Unauthorized" });
+
+    // Rate limiting: 30 messages per 10 seconds
+    const rateLimitResult = await checkRateLimit("messages", profile.id);
+    
+    // Set rate limit headers
+    const headers = getRateLimitHeaders(rateLimitResult);
+    Object.entries(headers).forEach(([key, value]) => {
+      res.setHeader(key, value);
+    });
+
+    if (!rateLimitResult.success) {
+      return res.status(429).json({ 
+        error: "Rate limit exceeded. Please slow down.",
+        retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
+      });
+    }
 
     if (!conversationId)
       return res.status(400).json({ error: "Conversation ID Missing" });
