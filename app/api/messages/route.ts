@@ -3,6 +3,8 @@ import { Message } from "@prisma/client";
 
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { cache, CACHE_KEYS, CACHE_TTL, isRedisConfigured } from "@/lib/redis";
+import { metrics } from "@/lib/metrics";
 
 const MESSAGES_BATCH = 10;
 
@@ -20,8 +22,37 @@ export async function GET(req: Request) {
       return new NextResponse("Channel ID Missing", { status: 400 });
 
     let messages: Message[] = [];
+    let fromCache = false;
+    const startTime = performance.now();
 
-    if (cursor) {
+    // Only cache first page (no cursor) - most frequently accessed
+    const shouldUseCache = !cursor && isRedisConfigured();
+    const cacheKey = `${CACHE_KEYS.MESSAGES}${channelId}:first`;
+
+    if (shouldUseCache) {
+      const { data, fromCache: cached, latencyMs } = await cache.getOrSet(
+        cacheKey,
+        async () => {
+          return await db.message.findMany({
+            take: MESSAGES_BATCH,
+            where: { channelId },
+            include: {
+              member: {
+                include: {
+                  profile: true
+                }
+              }
+            },
+            orderBy: { createdAt: "desc" }
+          });
+        },
+        CACHE_TTL.MESSAGES
+      );
+      messages = data || [];
+      fromCache = cached;
+      metrics.record("messages:getFirstPage", latencyMs, fromCache);
+    } else if (cursor) {
+      // Paginated query - no caching for cursor pages
       messages = await db.message.findMany({
         take: MESSAGES_BATCH,
         skip: 1,
@@ -40,7 +71,9 @@ export async function GET(req: Request) {
         },
         orderBy: { createdAt: "desc" }
       });
+      metrics.record("messages:getCursorPage", performance.now() - startTime, false);
     } else {
+      // No Redis configured - direct DB query
       messages = await db.message.findMany({
         take: MESSAGES_BATCH,
         where: { channelId },
@@ -53,6 +86,7 @@ export async function GET(req: Request) {
         },
         orderBy: { createdAt: "desc" }
       });
+      metrics.record("messages:getFirstPage", performance.now() - startTime, false);
     }
 
     let nextCursor = null;
@@ -65,5 +99,12 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("[MESSAGES_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+// Helper to invalidate messages cache when a new message is sent
+export async function invalidateMessagesCache(channelId: string) {
+  if (isRedisConfigured()) {
+    await cache.del(`${CACHE_KEYS.MESSAGES}${channelId}:first`);
   }
 }
