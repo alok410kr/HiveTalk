@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
-  relationMode = "prisma"
 }
 
 model Profile {
@@ -115,6 +114,7 @@ model Message {
 
   @@index([channelId])
   @@index([memberId])
+  @@index([channelId, createdAt(sort: Desc)]) // Composite index for pagination
 }
 
 model Conversation {
@@ -129,6 +129,7 @@ model Conversation {
   directMessages DirectMessage[]
 
   @@unique([memberOneId, memberTwoId])
+  @@index([memberOneId]) // Index for conversation lookup
   @@index([memberTwoId])
 }
 
@@ -150,4 +151,5 @@ model DirectMessage {
 
   @@index([memberId])
   @@index([conversationId])
+  @@index([conversationId, createdAt(sort: Desc)]) // Composite index for pagination
 }
