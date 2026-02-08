@@ -4,15 +4,15 @@ A full-featured Discord clone built with Next.js 14, featuring real-time messagi
 
 ## Features
 
-- 🔐 **Authentication** - Secure user authentication with Clerk
-- 💬 **Real-time Messaging** - Socket.io powered chat system
-- 📹 **Video Calls** - LiveKit integration for video/audio calls
-- 🏠 **Server Management** - Create and manage Discord-like servers
-- 📱 **Responsive Design** - Mobile-first responsive UI
-- 🎨 **Modern UI** - Beautiful interface with Tailwind CSS and Radix UI
-- 🔄 **Real-time Updates** - Live notifications and status updates
-- 📁 **File Uploads** - Upload and share files with UploadThing
-- 🎭 **Emoji Support** - Rich emoji picker and reactions
+-  **Authentication** - Secure user authentication with Clerk
+-  **Real-time Messaging** - Socket.io powered chat system
+-  **Video Calls** - LiveKit integration for video/audio calls
+-  **Server Management** - Create and manage Discord-like servers
+-  **Responsive Design** - Mobile-first responsive UI
+-  **Modern UI** - Beautiful interface with Tailwind CSS and Radix UI
+-  **Real-time Updates** - Live notifications and status updates
+-  **File Uploads** - Upload and share files with UploadThing
+-  **Emoji Support** - Rich emoji picker and reactions
 
 ## Tech Stack
 
@@ -30,7 +30,7 @@ A full-featured Discord clone built with Next.js 14, featuring real-time messagi
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - MySQL database
 - Clerk account for authentication
 - UploadThing account for file uploads
@@ -39,22 +39,26 @@ A full-featured Discord clone built with Next.js 14, featuring real-time messagi
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd discord-clone
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 4. Configure your environment variables in `.env.local`:
+
 ```env
 DATABASE_URL="mysql://username:password@localhost:3306/discord_clone"
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_clerk_publishable_key"
@@ -71,12 +75,14 @@ NEXT_PUBLIC_LIVEKIT_URL="your_livekit_url"
 ```
 
 5. Set up the database:
+
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
 6. Run the development server:
+
 ```bash
 npm run dev
 ```
