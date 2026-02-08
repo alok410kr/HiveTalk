@@ -2,6 +2,7 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { MemberRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { checkRateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 
 export async function POST(
     req:Request
@@ -16,6 +17,26 @@ export async function POST(
         if(!profile){
             return new NextResponse("Unauthorized",{status:401});
         }
+
+        // Rate limiting: 20 channel creations per hour
+        const rateLimitResult = await checkRateLimit("channelCreate", profile.id);
+        
+        if (!rateLimitResult.success) {
+            return new NextResponse(
+                JSON.stringify({ 
+                    error: "Rate limit exceeded. You can only create 20 channels per hour.",
+                    retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
+                }), 
+                { 
+                    status: 429,
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...getRateLimitHeaders(rateLimitResult)
+                    }
+                }
+            );
+        }
+
         if(!serverId){
             return new NextResponse("Server ID is missing",{status:400});
         }
