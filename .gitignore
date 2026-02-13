@@ -42,6 +42,16 @@ next-env.d.ts
 # IDE
 .vscode/
 .idea/
+.cursor/
+.agents/
 
 # OS
 Thumbs.db
+.env.docker
+
+# Docker artifacts
+*.tar
+hivetalk.tar
+
+# Interview prep (personal notes)
+Interview/
