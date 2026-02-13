@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { API } from "@/lib/api-config";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -56,7 +57,7 @@ export const CreateServerModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post("/api/servers", values);
+      await axios.post(API.servers.create(), values);
       form.reset();
       router.refresh();
       onClose(); // Close modal after successful submission

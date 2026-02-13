@@ -9,6 +9,7 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { ChatInput } from "@/components/chat/chat-input";
 import { MediaRoom } from "@/components/media-room";
+import { API_BASE } from "@/lib/api-config";
 
 interface MemberIdPageProps {
   params: {
@@ -68,7 +69,7 @@ export default async function MemberIdPage({
             name={otherMember.profile.name}
             chatId={conversation.id}
             type="conversation"
-            apiUrl="/api/direct-messages"
+            apiUrl={`${API_BASE}/direct-messages`}
             paramKey="conversationId"
             paramValue={conversation.id}
             socketUrl="/api/socket/direct-messages"

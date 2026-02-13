@@ -22,6 +22,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal
 import { MemberRole } from "@prisma/client";
 import qs from "query-string";
 import axios from "axios";
+import { API } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
 
 const roleIconMap={
@@ -43,12 +44,7 @@ export const MembersModal = () => {
   const onKick=async (memberId:string)=>{
     try{
       setLoadingId(memberId);
-      const url=qs.stringifyUrl({
-        url:`/api/members/${memberId}`,
-        query:{
-          serverId:server?.id,
-        }
-      });
+      const url = API.members.kick(memberId, server?.id!);
 
       const response = axios.delete(url);
 
@@ -66,12 +62,7 @@ export const MembersModal = () => {
   const onRoleChange=async (memberId:string, role:MemberRole)=>{
     try{
       setLoadingId(memberId);
-      const url=qs.stringifyUrl({
-        url:`/api/members/${memberId}`,
-        query:{
-          serverId:server?.id,
-        }
-      })
+      const url = API.members.update(memberId, server?.id!);
 
       const response = axios.patch(url,{role});
 

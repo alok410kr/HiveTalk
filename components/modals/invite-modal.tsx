@@ -18,6 +18,7 @@ import { Check, Copy, RefreshCw } from "lucide-react";
 import { useOrigin } from "@/hooks/use-origin";
 import { useState } from "react";
 import axios from "axios";
+import { API } from "@/lib/api-config";
 
 export const InviteModal = () => {
   const { onOpen,isOpen, onClose, type,data } = useModal();
@@ -50,8 +51,8 @@ export const InviteModal = () => {
 
     try {
       setIsLoading(true);
-      console.log(`Sending PATCH request to /api/servers/${server?.id}/invite-code`);
-      const response = await axios.patch(`/api/servers/${server?.id}/invite-code`);
+      console.log(`Sending PATCH request to ${API.servers.inviteCode(server?.id!)}`);
+      const response = await axios.patch(API.servers.inviteCode(server?.id!));
       console.log("Server update response:", response.data);
       onOpen("invite", { server: response.data });
   } catch (error) {

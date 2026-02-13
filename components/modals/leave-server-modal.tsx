@@ -16,6 +16,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import axios from "axios";
+import { API } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
 
 export const LeaveServerModal = () => {
@@ -32,7 +33,7 @@ export const LeaveServerModal = () => {
     try{
         setIsLoading(true);
 
-        await axios.patch(`/api/servers/${server?.id}/leave`);
+        await axios.patch(API.servers.leave(server?.id!));
 
         onClose();
         router.refresh();

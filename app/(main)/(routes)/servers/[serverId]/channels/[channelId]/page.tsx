@@ -9,6 +9,7 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { MediaRoom } from "@/components/media-room";
+import { API_BASE } from "@/lib/api-config";
 
 interface ChannelIdPageProps {
   params: {
@@ -48,7 +49,7 @@ export default async function ChannelIdPage({
             name={channel.name}
             chatId={channel.id}
             type="channel"
-            apiUrl="/api/messages"
+            apiUrl={`${API_BASE}/messages`}
             socketUrl="/api/socket/messages"
             socketQuery={{
               channelId: channel.id,

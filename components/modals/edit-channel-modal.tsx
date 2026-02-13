@@ -3,6 +3,7 @@ import  qs  from "query-string";
 import {useRouter } from "next/navigation";
 // import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { API } from "@/lib/api-config";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -72,12 +73,7 @@ export const EditChannelModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const url =qs.stringifyUrl({
-        url:`/api/channels/${channel?.id}`,
-        query:{
-          serverId: server?.id
-        }
-      });
+      const url = API.channels.update(channel?.id!, server?.id!);
       await axios.patch(url, values);
 
       form.reset();

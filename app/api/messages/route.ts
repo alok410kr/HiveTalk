@@ -103,7 +103,7 @@ export async function GET(req: Request) {
 }
 
 // Helper to invalidate messages cache when a new message is sent
-export async function invalidateMessagesCache(channelId: string) {
+async function invalidateMessagesCache(channelId: string) {
   if (isRedisConfigured()) {
     await cache.del(`${CACHE_KEYS.MESSAGES}${channelId}:first`);
   }
