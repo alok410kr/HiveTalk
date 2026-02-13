@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  hivetalk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hivetalk
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/test-v2"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - hivetalk-network
+
+  # Nginx reverse proxy (optional - for SSL termination)
+  nginx:
+    image: nginx:alpine
+    container_name: hivetalk-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx-docker.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - hivetalk
+    networks:
+      - hivetalk-network
+
+  # Certbot for SSL (optional)
+  certbot:
+    image: certbot/certbot
+    container_name: hivetalk-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - hivetalk-network
+
+networks:
+  hivetalk-network:
+    driver: bridge

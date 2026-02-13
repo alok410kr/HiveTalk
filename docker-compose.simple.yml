@@ -1,0 +1,23 @@
+# Simplified Docker Compose - Just the app
+# Use this for quick testing or when using external reverse proxy (Cloudflare, etc.)
+
+version: '3.8'
+
+services:
+  hivetalk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hivetalk
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/test-v2"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
